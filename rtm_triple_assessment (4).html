@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ristek Talent Mapper | Triple Assessment Ultimate</title>
+    
+    <!-- Tailwind CSS with Config for Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- html2pdf.js for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            background-color: #f8fafc; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        .view-section { display: none; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(15px); }
+        .view-section.active { display: block; opacity: 1; transform: translateY(0); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .likert-btn { transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s; cursor: pointer; }
+        .likert-btn:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .likert-btn:active { transform: scale(0.98); }
+
+        /* Case study scroll area */
+        .case-scroll {
+            max-height: 250px;
+            overflow-y: auto;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .dark .case-scroll {
+            border-bottom-color: #334155;
+        }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl shadow-indigo-200 dark:shadow-none shadow-lg flex items-center justify-center">
+                    <i data-lucide="microscope" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white leading-none">RTM Triple Engine</h1>
+                    <p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-1 uppercase tracking-wider">Araffi Developer Technology</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer" title="Toggle Theme">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                </button>
+                <div id="nav-actions" class="hidden">
+                    <button onclick="restartTest()" class="text-sm font-semibold px-4 py-2 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-200 dark:hover:bg-rose-900 transition-colors flex items-center gap-2 cursor-pointer">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Ulang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 w-full">
+
+        <!-- 1. LANDING VIEW -->
+        <div id="view-landing" class="view-section active w-full max-w-3xl mx-auto text-center py-12">
+            <div class="inline-block bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border border-indigo-100 dark:border-indigo-800 shadow-sm">
+                Araffi Developer Technology
+            </div>
+            <h2 class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
+                Analisis Karakteristik, <br class="hidden sm:block"> Penalaran & Insting Detektif.
+            </h2>
+            <p class="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Asesmen triple komprehensif yang melacak setiap pola jawaban Anda untuk menghasilkan laporan profil, distribusi IQ kognitif, level kejeniusan investigasi, serta grafik persentase kapabilitas diri secara dinamis.
+            </p>
+            
+            <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 max-w-md mx-auto mb-10 text-left transition-colors duration-300">
+                <h3 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="layers" class="w-5 h-5 text-indigo-500"></i> Struktur Asesmen
+                </h3>
+                <ul class="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="flex items-start gap-3 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+                        <div class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-2 rounded-lg shrink-0"><i data-lucide="fingerprint" class="w-4 h-4"></i></div>
+                        <div><span class="font-bold text-slate-800 dark:text-white block">Sesi 1: Kepribadian MBTI (32 Soal)</span>Skala Likert (Sangat Setuju - Sangat Tidak Setuju).</div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+                        <div class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg shrink-0"><i data-lucide="lightbulb" class="w-4 h-4"></i></div>
+                        <div><span class="font-bold text-slate-800 dark:text-white block">Sesi 2: Penalaran Logis (15 Soal)</span>Uji IQ dan logika pola matematika/bahasa.</div>
+                    </li>
+                    <li class="flex items-start gap-3 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl">
+                        <div class="bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 p-2 rounded-lg shrink-0"><i data-lucide="search" class="w-4 h-4"></i></div>
+                        <div><span class="font-bold text-slate-800 dark:text-white block">Sesi 3: Insting Detektif (10 Soal)</span>Analisis TKP, alibi, dan deduksi misteri pembunuhan.</div>
+                    </li>
+                </ul>
+
+                <!-- INPUT NAMA PESERTA -->
+                <div class="mt-8 mb-6 border-t border-slate-100 dark:border-slate-700 pt-6">
+                    <label for="participant-name" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Lengkap</label>
+                    <input type="text" id="participant-name" placeholder="Ketik nama Anda di sini..." class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors" required>
+                    <p id="name-error" class="hidden text-rose-500 text-xs mt-2 font-medium flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> Nama wajib diisi sebelum memulai asesmen.</p>
+                </div>
+
+                <button onclick="startTest()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none flex items-center justify-center gap-2 group cursor-pointer">
+                    Mulai Asesmen Sekarang
+                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. MBTI TEST VIEW (LIKERT SCALE) -->
+        <div id="view-mbti" class="view-section w-full max-w-4xl mx-auto">
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-1"><i data-lucide="fingerprint" class="w-3 h-3"></i> Sesi 1/3: Kepribadian</span>
+                        <h4 id="mbti-progress-text" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Pernyataan 1 / 32</h4>
+                    </div>
+                    <span id="mbti-progress-percentage" class="text-indigo-600 dark:text-indigo-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div id="mbti-progress-bar-fill" class="bg-indigo-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-6 sm:p-10 min-h-[400px] flex flex-col justify-between transition-colors duration-300">
+                <div class="flex-grow flex items-center justify-center mb-10">
+                    <h3 id="mbti-question-text" class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 text-center leading-relaxed">Memuat pernyataan...</h3>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <button onclick="handleMBTIAnswer(5)" class="likert-btn flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white border border-emerald-600 gap-1 sm:gap-2 col-span-2 sm:col-span-1">
+                        <i data-lucide="chevrons-up" class="w-5 h-5 sm:w-6 sm:h-6"></i><span class="text-xs sm:text-sm font-bold text-center">Sangat Setuju</span>
+                    </button>
+                    <button onclick="handleMBTIAnswer(4)" class="likert-btn flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 gap-1 sm:gap-2">
+                        <i data-lucide="chevron-up" class="w-4 h-4 sm:w-5 sm:h-5"></i><span class="text-xs sm:text-sm font-bold text-center">Setuju</span>
+                    </button>
+                    <button onclick="handleMBTIAnswer(3)" class="likert-btn flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 gap-1 sm:gap-2">
+                        <i data-lucide="minus" class="w-4 h-4 sm:w-5 sm:h-5"></i><span class="text-xs sm:text-sm font-bold text-center">Netral</span>
+                    </button>
+                    <button onclick="handleMBTIAnswer(2)" class="likert-btn flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-rose-100 dark:bg-rose-900/40 hover:bg-rose-200 dark:hover:bg-rose-900/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 gap-1 sm:gap-2">
+                        <i data-lucide="chevron-down" class="w-4 h-4 sm:w-5 sm:h-5"></i><span class="text-xs sm:text-sm font-bold text-center">Tidak Setuju</span>
+                    </button>
+                    <button onclick="handleMBTIAnswer(1)" class="likert-btn flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white border border-rose-600 gap-1 sm:gap-2 col-span-2 sm:col-span-1">
+                        <i data-lucide="chevrons-down" class="w-5 h-5 sm:w-6 sm:h-6"></i><span class="text-xs sm:text-sm font-bold text-center">Sangat Tidak Setuju</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PENALARAN TEST VIEW (MULTIPLE CHOICE) -->
+        <div id="view-penalaran" class="view-section w-full max-w-3xl mx-auto">
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1"><i data-lucide="lightbulb" class="w-3 h-3"></i> Sesi 2/3: Penalaran Logis (IQ)</span>
+                        <h4 id="cog-progress-text" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Soal 1 / 15</h4>
+                    </div>
+                    <span id="cog-progress-percentage" class="text-emerald-600 dark:text-emerald-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div id="cog-progress-bar-fill" class="bg-emerald-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-6 sm:p-10 min-h-[450px] flex flex-col transition-colors duration-300">
+                <div class="mb-8">
+                    <h3 id="cog-question-text" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-relaxed">Memuat soal...</h3>
+                </div>
+                <div id="cog-options-container" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+
+        <!-- 4. DETECTIVE TEST VIEW -->
+        <div id="view-detective" class="view-section w-full max-w-3xl mx-auto">
+            <div class="mb-6">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wider flex items-center gap-1"><i data-lucide="search" class="w-3 h-3"></i> Sesi 3/3: Insting Detektif</span>
+                        <h4 id="det-progress-text" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Kasus 1 / 10</h4>
+                    </div>
+                    <span id="det-progress-percentage" class="text-amber-600 dark:text-amber-400 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div id="det-progress-bar-fill" class="bg-amber-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-6 sm:p-8 flex flex-col transition-colors duration-300">
+                
+                <!-- Case Story Box -->
+                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-5 mb-6">
+                    <h3 class="font-bold text-amber-800 dark:text-amber-400 mb-2 flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-5 h-5"></i> Berkas Kasus: Misteri Tuan Arisanto
+                    </h3>
+                    <div class="case-scroll pr-2 text-sm text-slate-700 dark:text-slate-300 leading-relaxed space-y-2">
+                        <p>Tuan Arisanto ditemukan tewas di ruang kerjanya pada pukul <strong>21:00</strong>. Di luar sedang terjadi hujan badai yang sangat deras sejak pukul <strong>18:00</strong>.</p>
+                        <p>Berikut adalah alibi dari para tersangka yang berada di rumah tersebut:</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li><strong>Ibu Siska (Istri):</strong> "Saya sedang membaca buku di balkon luar untuk menikmati suasana badai."</li>
+                            <li><strong>Pak Maman (Tukang Kebun):</strong> "Saya sedang menyiram tanaman di taman depan agar besok pagi tetap segar."</li>
+                            <li><strong>Rina (Pelayan):</strong> "Saya sedang menyiapkan teh hangat di dapur untuk Tuan Arisanto."</li>
+                            <li><strong>Budi (Sopir):</strong> "Saya sedang membersihkan interior mobil di dalam garasi tertutup."</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 id="det-question-text" class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 leading-relaxed">Memuat pertanyaan...</h3>
+                </div>
+                <div id="det-options-container" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+
+        <!-- 5. SUPER COMPREHENSIVE RESULT DASHBOARD -->
+        <div id="view-result" class="view-section w-full max-w-6xl mx-auto py-4">
+            
+            <div class="flex justify-between items-start mb-10 flex-col sm:flex-row gap-4">
+                <div>
+                    <div class="inline-flex items-center justify-center p-3 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full mb-4">
+                        <i data-lucide="file-check-2" class="w-8 h-8"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Laporan Analisis Komprehensif</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Pemetaan bakat, kognitif, insting investigasi, dan matriks kapabilitas Anda.</p>
+                    <p class="text-sm font-bold text-indigo-600 dark:text-indigo-400 mt-2">Developed by Araffi developer technology</p>
+                </div>
+                <button id="btn-export-pdf" onclick="exportToPDF()" class="bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold py-3 px-6 rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer">
+                    <i data-lucide="download" class="w-5 h-5"></i> Unduh PDF
+                </button>
+            </div>
+
+            <div class="space-y-6">
+
+                <!-- NEW COMPREHENSIVE STATS GRAPHICS (RADAR & BAR GRAPHS) -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 md:p-8 transition-colors duration-300">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="line-chart" class="text-indigo-500"></i> Matriks Kapabilitas & Persentase Profil Diri
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Grafik persentase kapabilitas berdasarkan respons komparatif lintas sesi.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <!-- Radar Canvas Container -->
+                        <div class="relative w-full aspect-square max-w-[400px] mx-auto bg-slate-50 dark:bg-slate-900/40 rounded-2xl p-4 flex items-center justify-center">
+                            <canvas id="capabilityRadarChart"></canvas>
+                        </div>
+
+                        <!-- Progress Bars & Data Descriptions -->
+                        <div class="space-y-6">
+                            <!-- Metric 1: Kecerdasan -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <i data-lucide="brain-circuit" class="w-4 h-4 text-indigo-500"></i> Kecerdasan Kognitif (IQ)
+                                    </span>
+                                    <span id="percent-kecerdasan" class="text-sm font-black text-indigo-600 dark:text-indigo-400">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="bar-kecerdasan" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Dihitung dari akurasi pemecahan pola logika & visual kognitif (Sesi 2).</p>
+                            </div>
+
+                            <!-- Metric 2: Emosional -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <i data-lucide="heart" class="w-4 h-4 text-rose-500"></i> Kecerdasan Emosional (EQ)
+                                    </span>
+                                    <span id="percent-emosional" class="text-sm font-black text-rose-600 dark:text-rose-400">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="bar-emosional" class="bg-rose-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Berdasarkan keselarasan kualitatif rasa empati dan manajemen interaksi sosial (Sesi 1).</p>
+                            </div>
+
+                            <!-- Metric 3: Ketelitian -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <i data-lucide="binoculars" class="w-4 h-4 text-amber-500"></i> Ketelitian & Observasi Detail
+                                    </span>
+                                    <span id="percent-ketelitian" class="text-sm font-black text-amber-600 dark:text-amber-400">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="bar-ketelitian" class="bg-amber-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Mengukur seberapa jeli Anda melihat ketidakwajaran fisik di TKP & akurasi logis (Sesi 1 & 3).</p>
+                            </div>
+
+                            <!-- Metric 4: Cara Kerja -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500"></i> Cara Kerja Sistematis
+                                    </span>
+                                    <span id="percent-carakerja" class="text-sm font-black text-emerald-600 dark:text-emerald-400">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="bar-carakerja" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Struktur perencanaan, integritas tugas, dan keteraturan alur kerja yang dipilih (Sesi 1).</p>
+                            </div>
+
+                            <!-- Metric 5: Insting Investigasi -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                        <i data-lucide="shield-alert" class="w-4 h-4 text-cyan-500"></i> Insting Investigasi (Deduktif)
+                                    </span>
+                                    <span id="percent-insting" class="text-sm font-black text-cyan-600 dark:text-cyan-400">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                                    <div id="bar-insting" class="bg-cyan-500 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Mengukur intuisi taktis dan ketajaman logika deduktif Anda dalam kuis detektif (Sesi 3).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 1: EXECUTIVE SUMMARY & THE BELL CURVE -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- MBTI Summary Card -->
+                    <div class="bg-slate-100 dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 relative overflow-hidden flex flex-col justify-center">
+                        <div class="relative z-10">
+                            <p class="text-indigo-600 dark:text-indigo-400 font-bold tracking-widest uppercase text-xs mb-2">Tipe Kepribadian</p>
+                            <h1 id="res-mbti-type" class="text-6xl font-black mb-1 tracking-tighter text-slate-800 dark:text-white">INTJ</h1>
+                            <h3 id="res-profile-title" class="text-xl font-bold text-amber-500 dark:text-amber-400 mb-4">The Architect / Mastermind</h3>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-px mb-4"></div>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed"><i data-lucide="check-circle" class="w-4 h-4 inline mb-0.5 mr-1 text-emerald-500"></i> Data kepribadian berhasil dienkapsulasi dari 32 titik sampel.</p>
+                        </div>
+                    </div>
+
+                    <!-- Logic Score & Bell Curve -->
+                    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 relative overflow-hidden flex flex-col transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                    <i data-lucide="brain" class="w-4 h-4"></i> Skor Kognitif (IQ)
+                                </h3>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <span id="cog-final-score" class="text-4xl font-black text-slate-800 dark:text-white">0</span>
+                                    <span class="text-lg font-bold text-slate-400">/ 15</span>
+                                </div>
+                            </div>
+                            <div id="cog-category-badge" class="px-3 py-1 rounded-full text-sm font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">Baik</div>
+                        </div>
+                        <div class="flex-grow relative w-full h-[140px] bg-slate-50 dark:bg-slate-900/50 rounded-xl p-2">
+                            <canvas id="bellCurveChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 text-center mt-2 font-medium">Distribusi Normal Populasi vs Skor Anda</p>
+                    </div>
+                </div>
+
+                <!-- NEW SECTION: DETECTIVE SCORE -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors">
+                    <div class="bg-amber-50 dark:bg-amber-900/20 p-6 border-b border-amber-100 dark:border-amber-800/50 flex justify-between items-center flex-wrap gap-4">
+                        <h4 class="text-xl font-extrabold text-amber-900 dark:text-amber-400 flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-6 h-6"></i> Hasil Evaluasi Insting Detektif
+                        </h4>
+                        <div class="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-600 flex items-baseline gap-2">
+                            <span class="text-sm font-bold text-slate-500">Skor Deduksi:</span>
+                            <span id="det-final-score" class="text-2xl font-black text-amber-600 dark:text-amber-400">0</span>
+                            <span class="text-sm font-bold text-slate-400">/ 10</span>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <h3 id="det-eval-title" class="text-2xl font-black text-slate-800 dark:text-white mb-2">Detektif Lapangan</h3>
+                        <p id="det-eval-quote" class="italic text-slate-500 dark:text-slate-400 mb-6 border-l-4 border-amber-400 pl-3">"Kutipan karakter"</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 block mb-2"><i data-lucide="award" class="w-4 h-4 inline mr-1 text-amber-500"></i> Tingkat Kejeniusan:</span>
+                                <p id="det-eval-level" class="text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/30 p-3 rounded-lg border border-slate-100 dark:border-slate-600">...</p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 block mb-2"><i data-lucide="compass" class="w-4 h-4 inline mr-1 text-indigo-500"></i> Saran Detektif:</span>
+                                <p id="det-eval-advice" class="text-slate-600 dark:text-slate-300 bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-lg border border-indigo-100 dark:border-indigo-800/50">...</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <span class="font-bold text-slate-800 dark:text-slate-200 block mb-2"><i data-lucide="users" class="w-4 h-4 inline mr-1 text-emerald-500"></i> Sifat & Karakteristik:</span>
+                                <ul id="det-eval-traits" class="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-300 font-medium">
+                                    <!-- Injected -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2 & 3: PEMETAAN POTENSI & KELEMAHAN -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-100 dark:border-slate-700 p-8 transition-colors">
+                        <h4 class="text-lg font-extrabold text-slate-800 dark:text-white mb-4 flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+                            <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i> Pemetaan Potensi & Bakat
+                        </h4>
+                        <p id="res-potensi" class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">Memuat data komprehensif...</p>
+                        
+                        <h5 class="text-sm font-bold text-slate-800 dark:text-white mb-3">Bakat Dominan Terdeteksi:</h5>
+                        <div id="res-bakat" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div class="bg-rose-50/50 dark:bg-rose-900/10 rounded-3xl shadow-sm border border-rose-100 dark:border-rose-900/50 p-8 transition-colors">
+                        <h4 class="text-lg font-extrabold text-rose-800 dark:text-rose-400 mb-4 flex items-center gap-2 border-b border-rose-200/50 dark:border-rose-800/50 pb-3">
+                            <i data-lucide="eye-off" class="w-5 h-5 text-rose-500"></i> Indeks Kelemahan
+                        </h4>
+                        <ul id="res-kelemahan" class="space-y-3 text-sm text-slate-700 dark:text-slate-300 list-disc pl-4 marker:text-rose-400">
+                            <!-- Injected -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: ANALISIS POLA JAWABAN (TRANSPARENCY REPORT) -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors mt-6 print:hidden">
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 border-b border-slate-200 dark:border-slate-700">
+                        <h4 class="text-lg font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="file-search" class="w-5 h-5 text-indigo-500"></i> Transparansi Algoritma: Bedah Jawaban
+                        </h4>
+                        <p class="text-sm text-slate-500 mt-2">Daftar ini tidak akan disertakan pada PDF untuk menghemat ruang.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8">
+                        <!-- Logic Breakdown -->
+                        <div class="mb-8">
+                            <h5 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 w-6 h-6 rounded-full flex justify-center items-center text-xs">A</span> Bedah Logika Kognitif (15 Soal)</h5>
+                            <div id="logic-breakdown-container" class="space-y-4">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+
+                        <hr class="border-slate-100 dark:border-slate-700 mb-8">
+
+                        <!-- Detective Breakdown -->
+                        <div>
+                            <h5 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2"><span class="bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 w-6 h-6 rounded-full flex justify-center items-center text-xs">B</span> Bedah Kasus Detektif (10 Soal)</h5>
+                            <div id="det-breakdown-container" class="space-y-4">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Dashboard Content -->
+
+        </div>
+        
+        <!-- ======================================================= -->
+        <!-- TEMPLATE PDF TIGA HALAMAN CLINICAL REPORT (HIDDEN) -->
+        <!-- ======================================================= -->
+        <div id="medical-pdf-template" style="display: none; background: #ffffff; color: #1e293b; width: 100%; max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+            
+            <!-- HALAMAN 1: METRIK & BIO-MARKER UTAMA -->
+            <div class="pdf-page" style="page-break-after: always; padding: 40px; min-height: 297mm; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; background: #ffffff;">
+                <div>
+                    <!-- KOP SURAT MEDIS -->
+                    <div style="border-bottom: 3px solid #0f172a; padding-bottom: 12px; margin-bottom: 25px; display: table; width: 100%;">
+                        <div style="display: table-cell; vertical-align: middle; width: 80px;">
+                            <!-- Fixed Safe SVG Data URI Logo for PDF generation without CORS/Broken Base64 issues -->
+                            <img id="med-logo" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234f46e5'/%3E%3Cpath d='M25 50 L50 25 L75 50 L50 75 Z' fill='white'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%234f46e5'/%3E%3C/svg%3E" alt="Logo Araffi AI" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px; display: block;">
+                        </div>
+                        <div style="display: table-cell; vertical-align: middle; padding-left: 15px;">
+                            <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0; font-family: 'Inter', sans-serif;">PRAMIKA ANALYTICS & CLINICAL ASSESSMENT</h1>
+                            <p style="font-size: 11px; color: #64748b; margin: 3px 0 0 0; line-height: 1.3; font-family: 'Inter', sans-serif;">Pusat Sertifikasi Kompetensi, Logika Neuro-Kognitif & Karakteristik Kepribadian<br>info@pramikaclinic.com</p>
+                        </div>
+                    </div>
+
+                    <h2 style="text-align: center; font-size: 15px; font-weight: 800; border: 1px solid #0f172a; padding: 6px; margin-bottom: 25px; letter-spacing: 1px; background: #f8fafc; font-family: 'Inter', sans-serif;">BERKAS HASIL PEMERIKSAAN ASESMEN KOGNITIF & TIPE KEPRIBADIAN</h2>
+
+                    <!-- DATA REGISTRASI SUBJEK -->
+                    <table style="width: 100%; font-size: 11px; margin-bottom: 25px; border-collapse: collapse; font-family: 'Inter', sans-serif;">
+                        <tr>
+                            <td style="width: 16%; font-weight: bold; padding: 4px 0;">No. Registrasi</td><td style="width: 2%;">:</td><td style="width: 32%; color: #475569;" id="med-reg">RTM-9514902543296</td>
+                            <td style="width: 16%; font-weight: bold; padding: 4px 0;">Tanggal Tes</td><td style="width: 2%;">:</td><td style="width: 32%; color: #475569;" id="med-date">...</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 4px 0;">Nama Lengkap</td><td>:</td><td id="med-name" style="font-weight: bold; color: #0f172a;">TN. PESERTA ASESMEN UTAMA</td>
+                            <td style="font-weight: bold; padding: 4px 0;">Tipe Evaluasi</td><td>:</td><td style="color: #475569;">Triple Assessment Suite</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 4px 0;">Metode Analisis</td><td>:</td><td style="color: #475569;">Neuro-Cognitive Quantitative Matrix</td>
+                            <td style="font-weight: bold; padding: 4px 0;">Pemeriksa</td><td>:</td><td style="color: #475569; font-weight: bold;">Araffi Artificial Intelligence (AI)</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; padding: 4px 0;">Waktu Pengerjaan</td><td>:</td><td id="med-time" style="color: #475569; font-weight: bold;">...</td>
+                            <td style="font-weight: bold; padding: 4px 0;"></td><td></td><td></td>
+                        </tr>
+                    </table>
+
+                    <!-- TABEL SKOR KUANTITATIF ASESMEN -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; font-family: 'Inter', sans-serif;">
+                        <thead>
+                            <tr style="border-top: 2px solid #0f172a; border-bottom: 2px solid #0f172a; background: #f8fafc;">
+                                <th style="padding: 10px; text-align: left; width: 45%; font-weight: bold;">Kategori Pemeriksaan Fisik & Mental</th>
+                                <th style="padding: 10px; text-align: center; width: 25%; font-weight: bold;">Skor Hasil</th>
+                                <th style="padding: 10px; text-align: left; width: 30%; font-weight: bold;">Interval Nilai Rujukan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- SESI 1: KEPRIBADIAN -->
+                            <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;"><td colspan="3" style="padding: 6px 10px; font-weight: bold; font-size: 11px; color: #1e293b;">I. BIOMARKER KEPRIBADIAN (SESI 1)</td></tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Tipe Kepribadian Hasil Analisis</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-size: 14px; color: #4f46e5;" id="med-mbti-type">...</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">16 Tipe Dasar MBTI</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Profil Pola Karakter Kepribadian</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold;" id="med-mbti-title">...</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Standar Deviasi Myers-Briggs</td>
+                            </tr>
+
+                            <!-- SESI 2: KOGNITIF -->
+                            <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;"><td colspan="3" style="padding: 6px 10px; font-weight: bold; font-size: 11px; color: #1e293b;">II. INDEKS KOGNITIF & LOGIKA (SESI 2)</td></tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Akurasi Penalaran Logis (Logika)</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-size: 14px;" id="med-cog-score">...</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">>= 9 (Interpretasi Baik)</td>
+                            </tr>
+
+                            <!-- SESI 3: INVESTIGASI -->
+                            <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;"><td colspan="3" style="padding: 6px 10px; font-weight: bold; font-size: 11px; color: #1e293b;">III. TINGKAT ANALIS DEDUKTIF (SESI 3)</td></tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Skor Deduksi Insting Detektif</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold; font-size: 14px;" id="med-det-score">...</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">>= 7 (Tingkat Ketajaman Elit)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">Gelar Klasifikasi Deduktif</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; font-weight: bold;" id="med-det-level">...</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Skala Watson ke Sherlock</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="font-size: 12px; color: #475569; line-height: 1.6;">
+                        <b>Catatan Khusus:</b><br>
+                        <span id="med-notes">Kombinasi dimensi kepribadian pasien menunjukkan kemampuan adaptasi dan logika tingkat tinggi.</span>
+                    </div>
+                </div>
+
+                <!-- FOOTER HALAMAN 1 (DOKTER VERIFIKATOR) -->
+                <div style="border-top: 1px solid #cbd5e1; padding-top: 15px; display: table; width: 100%; font-family: 'Inter', sans-serif;">
+                    <div style="display: table-cell; width: 60%; font-size: 10px; color: #64748b; line-height: 1.5; vertical-align: middle;">
+                        * Lembar ini memuat metrik kuantitatif mentah subjek berdasarkan pengujian kognitif terkomparasi.<br>
+                        * Matriks Kapabilitas & Analisis dilampirkan pada halaman selanjutnya.<br>
+                        * Dokumen diterbitkan secara otomatis dan dinyatakan sah secara klinis tanpa tanda tangan basah.
+                    </div>
+                    <div style="display: table-cell; width: 40%; text-align: center; font-size: 11px; vertical-align: bottom;">
+                        Pemeriksa Terdaftar,<br>
+                        <i style="color: #4f46e5; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 13px;">Pramika Clinical Lab</i>
+                        <div style="height: 50px;"></div>
+                        <b><u>Araffi Artificial Intelligence (AI)</u></b><br>
+                        <span style="font-size: 10px; color: #64748b;">NIP. 199514902 543 2 96</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN 2: MATRIKS KAPABILITAS -->
+            <div class="pdf-page" style="page-break-after: always; padding: 40px; min-height: 297mm; display: flex; flex-direction: column; justify-content: flex-start; box-sizing: border-box; background: #ffffff; border-top: 1px dashed #cbd5e1;">
+                <!-- MINI HEADER UNTUK HALAMAN 2 -->
+                <div style="border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 30px; display: table; width: 100%; font-family: 'Inter', sans-serif;">
+                    <div style="display: table-cell; font-size: 13px; font-weight: bold; color: #0f172a;">RTM CLINICAL ASSESSMENT REPORT</div>
+                    <div style="display: table-cell; text-align: right; font-size: 11px; color: #64748b;" id="med-page2-reg">Reg No: RTM-9514902543296</div>
+                </div>
+
+                <h3 style="text-align: center; font-size: 14px; font-weight: 800; text-decoration: underline; margin-bottom: 30px; font-family: 'Inter', sans-serif; text-transform: uppercase;">LAMPIRAN I: MATRIKS KAPABILITAS DINAMIS</h3>
+
+                <!-- RADAR CHART INJECTION -->
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <img id="med-radar-chart" src="" style="max-width: 380px; height: auto; margin: 0 auto; display: block;" alt="Radar Chart Kapabilitas">
+                </div>
+
+                <!-- PROGRESS BARS INJECTION -->
+                <div style="font-family: 'Inter', sans-serif; width: 100%; max-width: 500px; margin: 0 auto; space-y: 20px;">
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1e293b;">
+                            <span>Kecerdasan Kognitif (IQ)</span>
+                            <span id="med-cap-1" style="color: #4f46e5;">...</span>
+                        </div>
+                        <div style="width: 100%; background-color: #f1f5f9; border-radius: 99px; height: 10px;">
+                            <div id="med-cap-1-bar" style="background-color: #4f46e5; height: 10px; border-radius: 99px; width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1e293b;">
+                            <span>Kecerdasan Emosional (EQ)</span>
+                            <span id="med-cap-2" style="color: #f43f5e;">...</span>
+                        </div>
+                        <div style="width: 100%; background-color: #f1f5f9; border-radius: 99px; height: 10px;">
+                            <div id="med-cap-2-bar" style="background-color: #f43f5e; height: 10px; border-radius: 99px; width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1e293b;">
+                            <span>Ketelitian & Observasi TKP</span>
+                            <span id="med-cap-3" style="color: #f59e0b;">...</span>
+                        </div>
+                        <div style="width: 100%; background-color: #f1f5f9; border-radius: 99px; height: 10px;">
+                            <div id="med-cap-3-bar" style="background-color: #f59e0b; height: 10px; border-radius: 99px; width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1e293b;">
+                            <span>Sistematika & Manajemen Tugas</span>
+                            <span id="med-cap-4" style="color: #10b981;">...</span>
+                        </div>
+                        <div style="width: 100%; background-color: #f1f5f9; border-radius: 99px; height: 10px;">
+                            <div id="med-cap-4-bar" style="background-color: #10b981; height: 10px; border-radius: 99px; width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #1e293b;">
+                            <span>Insting Investigasi Deduktif</span>
+                            <span id="med-cap-5" style="color: #06b6d4;">...</span>
+                        </div>
+                        <div style="width: 100%; background-color: #f1f5f9; border-radius: 99px; height: 10px;">
+                            <div id="med-cap-5-bar" style="background-color: #06b6d4; height: 10px; border-radius: 99px; width: 0%;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- HALAMAN 3: LEMBAR PENJELASAN KLINIS & PEMBAHASAN KOMPREHENSIF -->
+            <div class="pdf-page" style="padding: 40px; min-height: 297mm; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; background: #ffffff; border-top: 1px dashed #cbd5e1;">
+                <div>
+                    <!-- MINI HEADER UNTUK HALAMAN 3 -->
+                    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 20px; display: table; width: 100%; font-family: 'Inter', sans-serif;">
+                        <div style="display: table-cell; font-size: 13px; font-weight: bold; color: #0f172a;">RTM CLINICAL ASSESSMENT REPORT</div>
+                        <div style="display: table-cell; text-align: right; font-size: 11px; color: #64748b;" id="med-page3-reg">Reg No: RTM-9514902543296</div>
+                    </div>
+
+                    <h3 style="text-align: center; font-size: 14px; font-weight: 800; text-decoration: underline; margin-bottom: 20px; font-family: 'Inter', sans-serif; text-transform: uppercase;">LAMPIRAN II: PEMBAHASAN KLINIS DETAIL</h3>
+
+                    <!-- KONTEN PEMBAHASAN SUPER KOMPREHENSIF (DIINJEKSI OLEH JAVASCRIPT) -->
+                    <div id="med-discussion-content" style="font-size: 11px; line-height: 1.6; text-align: justify; font-family: 'Inter', sans-serif; color: #1e293b;">
+                        <!-- Injected dynamically based on user's exact parameters -->
+                    </div>
+                </div>
+
+                <!-- FOOTER HALAMAN 3 -->
+                <div style="border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 20px; font-size: 9px; color: #94a3b8; text-align: center; font-family: 'Inter', sans-serif; width: 100%;">
+                    Halaman 3 / 3 - Akhir Dokumen RTM Analytics.
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Unified Script for Data & Logic -->
+    <script>
+        // --- SAFE LOCAL STORAGE WRAPPER ---
+        function safeSetTheme(theme) {
+            try { localStorage.setItem('theme', theme); } catch(e) { console.warn("LocalStorage blocked."); }
+        }
+        function safeGetTheme() {
+            try { return localStorage.theme; } catch(e) { return null; }
+        }
+
+        // --- 1. MBTI QUESTIONS (32 Items) ---
+        const mbtiQuestions = [
+            { id: 1, text: "Saya merasa berenergi setelah menghabiskan waktu bersama banyak orang.", trait: "E", opp: "I" },
+            { id: 2, text: "Saya lebih suka memulai percakapan dengan orang yang baru dikenal.", trait: "E", opp: "I" },
+            { id: 3, text: "Bekerja dalam kelompok yang ramai lebih menyenangkan daripada bekerja sendirian.", trait: "E", opp: "I" },
+            { id: 4, text: "Saya cenderung langsung mengutarakan apa yang saya pikirkan tanpa banyak disaring.", trait: "E", opp: "I" },
+            { id: 5, text: "Saya menikmati menjadi pusat perhatian dalam lingkungan sosial.", trait: "E", opp: "I" },
+            { id: 6, text: "Saya lebih suka berkomunikasi secara langsung/telepon daripada lewat teks/chat.", trait: "E", opp: "I" },
+            { id: 7, text: "Kesunyian dan kesendirian dalam waktu lama membuat saya merasa bosan.", trait: "E", opp: "I" },
+            { id: 8, text: "Saya memiliki lingkaran pertemanan yang luas dan suka menambah teman baru.", trait: "E", opp: "I" },
+            { id: 9, text: "Saya lebih fokus pada fakta dan realita yang terjadi saat ini daripada membayangkan masa depan.", trait: "S", opp: "N" },
+            { id: 10, text: "Saya lebih suka hal-hal yang praktis dan bisa langsung diaplikasikan daripada teori abstrak.", trait: "S", opp: "N" },
+            { id: 11, text: "Saat membaca panduan, saya membacanya dengan teliti secara berurutan.", trait: "S", opp: "N" },
+            { id: 12, text: "Saya lebih menghargai pengalaman masa lalu sebagai panduan untuk memecahkan masalah.", trait: "S", opp: "N" },
+            { id: 13, text: "Saya mengingat detail suatu kejadian secara spesifik, bukan sekadar garis besarnya.", trait: "S", opp: "N" },
+            { id: 14, text: "Saya lebih suka instruksi yang jelas dan terperinci daripada instruksi yang membebaskan.", trait: "S", opp: "N" },
+            { id: 15, text: "Saya melihat dunia apa adanya, bukan bagaimana dunia seharusnya.", trait: "S", opp: "N" },
+            { id: 16, text: "Ide-ide liar tanpa rencana eksekusi yang realistis terasa tidak berguna bagi saya.", trait: "S", opp: "N" },
+            { id: 17, text: "Keputusan terbaik selalu didasarkan pada logika dan data, bukan emosi.", trait: "T", opp: "F" },
+            { id: 18, text: "Menemukan kebenaran objektif lebih penting daripada menjaga perasaan orang lain.", trait: "T", opp: "F" },
+            { id: 19, text: "Saat teman sedang bermasalah, saya cenderung langsung menawarkan solusi konkret daripada sekadar mendengarkan dan simpati.", trait: "T", opp: "F" },
+            { id: 20, text: "Saya merasa keadilan dan ketegasan lebih penting daripada belas kasih.", trait: "T", opp: "F" },
+            { id: 21, text: "Saya sering menganggap argumen yang emosional itu tidak valid.", trait: "T", opp: "F" },
+            { id: 22, text: "Dalam bekerja, mencapai target kompetensi lebih penting daripada memastikan semua orang merasa nyaman.", trait: "T", opp: "F" },
+            { id: 23, text: "Saya bisa tetap bersikap objektif dan dingin meskipun situasinya sangat emosional.", trait: "T", opp: "F" },
+            { id: 24, text: "Saya lebih suka dipuji karena hasil kerja keras dan kecerdasan saya daripada kebaikan hati saya.", trait: "T", opp: "F" },
+            { id: 25, text: "Saya selalu membuat rencana dan jadwal yang rinci sebelum melakukan perjalanan.", trait: "J", opp: "P" },
+            { id: 26, text: "Saya merasa tertekan jika ada perubahan rencana secara mendadak.", trait: "J", opp: "P" },
+            { id: 27, text: "Meja kerja dan barang-barang saya selalu tertata rapi pada tempatnya.", trait: "J", opp: "P" },
+            { id: 28, text: "Saya lebih suka menyelesaikan pekerjaan jauh-jauh hari sebelum tenggat waktu.", trait: "J", opp: "P" },
+            { id: 29, text: "Memiliki rutinitas yang teratur membuat saya merasa tenang dan terkendali.", trait: "J", opp: "P" },
+            { id: 30, text: "Saya merasa tidak nyaman jika harus membiarkan suatu keputusan menggantung.", trait: "J", opp: "P" },
+            { id: 31, text: "Aturan dan struktur sangat penting untuk menjaga segala sesuatunya berjalan lancar.", trait: "J", opp: "P" },
+            { id: 32, text: "Selesaikan dulu semua tanggung jawab, baru bersenang-senang.", trait: "J", opp: "P" }
+        ];
+
+        // --- 2. PENALARAN QUESTIONS ---
+        const penalaranQuestions = [
+            { text: "KENDARAAN : BENSIN = MANUSIA : ...", options: ["Makanan", "Sepatu", "Rumah", "Pakaian", "Pekerjaan"], answerIndex: 0, explanation: "Kendaraan membutuhkan bensin sebagai sumber energi, manusia membutuhkan makanan." },
+            { text: "Deret angka: 3, 6, 12, 24, ... Angka selanjutnya adalah:", options: ["30", "36", "48", "52", "60"], answerIndex: 2, explanation: "Pola deret ukur: dikali 2. 24 x 2 = 48." },
+            { text: "Semua anggota divisi pandai. Budi adalah anggota divisi. Kesimpulannya:", options: ["Budi mungkin pandai.", "Budi pandai.", "Budi tidak pandai.", "Tidak dapat disimpulkan.", "Budi malas."], answerIndex: 1, explanation: "Silogisme kategorial murni." },
+            { text: "Sinonim dari kata \"ELABORASI\" adalah...", options: ["Peringkasan", "Penjelasan terperinci", "Pembatalan", "Pemotongan", "Penyembunyian"], answerIndex: 1, explanation: "KBBI: penggarapan secara tekun/penjelasan terperinci." },
+            { text: "Jika 5 mesin membuat 5 unit dalam 5 menit, berapa waktu untuk 100 mesin membuat 100 unit?", options: ["100 menit", "50 menit", "20 menit", "5 menit", "1 menit"], answerIndex: 3, explanation: "Kecepatan 1 mesin = 1 unit / 5 menit. Bekerja paralel waktunya tetap 5 menit." },
+            { text: "Antonim dari \"PROGRESIF\" adalah...", options: ["Inovatif", "Maju", "Regresif", "Aktif", "Dinamis"], answerIndex: 2, explanation: "Progresif = maju. Regresif = mundur." },
+            { text: "Jika A > B, dan B > C, maka...", options: ["A = C", "A < C", "A > C", "B = C", "Tidak ada hubungan"], answerIndex: 2, explanation: "Hukum transitif matematika." },
+            { text: "Mana kata yang TIDAK termasuk kelompoknya?", options: ["Meja", "Kursi", "Lemari", "Televisi", "Rak"], answerIndex: 3, explanation: "Televisi alat elektronik, sisanya perabot." },
+            { text: "15% dari 200 adalah...", options: ["15", "20", "25", "30", "35"], answerIndex: 3, explanation: "(15 / 100) * 200 = 30." },
+            { text: "Jika hujan tanah basah. Tanah tidak basah. Maka:", options: ["Hari ini hujan.", "Hari ini tidak hujan.", "Kemarin hujan.", "Hujan turun.", "Tanah kering."], answerIndex: 1, explanation: "Modus Tollens." },
+            { text: "Deret huruf: A, C, E, G, ...", options: ["H", "I", "J", "K", "L"], answerIndex: 1, explanation: "Melompat 1 huruf abjad. G -> (H) -> I." },
+            { text: "Kereta 60 km/jam. Jarak dalam 90 menit adalah...", options: ["60 km", "75 km", "80 km", "90 km", "100 km"], answerIndex: 3, explanation: "90 mnt = 1.5 jam. 60 * 1.5 = 90." },
+            { text: "Bentuk baku kata serapan?", options: ["Analisa", "Analisis", "Analiysa", "Analisys", "Analistis"], answerIndex: 1, explanation: "Sesuai PUEBI/KBBI, yang baku adalah Analisis." },
+            { text: "Jika hari ini Rabu, 100 hari lagi hari...", options: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"], answerIndex: 4, explanation: "100 mod 7 = 2. Dua hari setelah Rabu adalah Jumat." },
+            { text: "MATA : MELIHAT = TELINGA : ...", options: ["Berjalan", "Berbicara", "Mendengar", "Merasa", "Mencium"], answerIndex: 2, explanation: "Analogi fungsi organ." }
+        ];
+
+        // --- 3. DETECTIVE QUESTIONS & EVALUATIONS ---
+        const detectiveQuestions = [
+            { text: "Siapakah pelaku pembunuhan Tuan Arisanto berdasarkan analisis alibi di atas?", options: ["Ibu Siska (Istri)", "Pak Maman (Tukang Kebun)", "Rina (Pelayan)", "Budi (Sopir)", "Tidak ada pelaku di antara mereka", "Semua tersangka bekerja sama"], answerIndex: 1, explanation: "Pak Maman adalah pelakunya. Alibinya menyiram tanaman di taman terbuka saat hujan badai sangat deras adalah kebohongan yang tidak masuk akal dan bertentangan dengan hukum alam." },
+            { text: "Mengapa alibi Pak Maman dianggap sebagai kebohongan fatal dalam logika detektif?", options: ["Karena tanaman di kediaman Arisanto adalah tanaman plastik.", "Karena Pak Maman sebenarnya tidak tahu cara berkebun.", "Karena menyiram tanaman saat hujan deras adalah tindakan sia-sia, tidak masuk akal, dan hanya karangan untuk menutupi keberadaannya.", "Karena taman depan rumah sedang direnovasi dan tidak ada tanaman.", "Karena Pak Maman takut dengan air hujan.", "Karena pupuk tanaman sedang habis hari itu."], answerIndex: 2, explanation: "Detektif selalu mencari kejanggalan yang melawan logika sehari-hari. Seseorang tidak akan membuang energi menyiram tanaman di bawah guyuran hujan badai." },
+            { text: "Detektif menemukan jejak lumpur basah di karpet ruang kerja korban yang polanya identik dengan sepatu bot berkebun. Namun, Pak Maman mengklaim sepatunya kering di gudang. Apa kesimpulan Anda?", options: ["Ada orang lain yang mencuri dan memakai sepatu bot Pak Maman.", "Pak Maman telah membersihkan atau mengganti sepatunya sebelum detektif datang untuk menghilangkan bukti fisik.", "Lumpur tersebut terbang masuk lewat jendela ruang kerja yang terbuka.", "Karpet tersebut memang sudah kotor sejak seminggu yang lalu.", "Jejak tersebut adalah motif karpet baru milik Tuan Arisanto.", "Korban sendiri yang memakai sepatu bot tersebut sebelum tewas."], answerIndex: 1, explanation: "Jika pola sepatunya identik namun kondisi sepatu yang ditemukan kering, kemungkinan besar pelaku melakukan tindakan manipulasi (staging) dengan mengeringkan atau mengganti alas kakinya untuk mengecoh penyelidikan." },
+            { text: "Korban ditemukan memegang sebuah jam tangan yang pecah dan berhenti pada pukul 20:15. Namun, dokter forensik menyatakan kematian terjadi pada pukul 19:30. Apa arti perbedaan waktu ini bagi penyelidikan?", options: ["Jam tangan korban rusak karena baterainya habis secara kebetulan.", "Korban sengaja merusak jam tangannya sendiri sebelum diserang.", "Pelaku sengaja mengubah waktu di jam tangan untuk mengacaukan perkiraan waktu kematian (time of death) yang sebenarnya dan membangun alibi palsu.", "Dokter forensik salah melakukan analisis medis.", "Jam tangan tersebut mengalami distorsi medan magnet di ruangan.", "Korban tewas dua kali pada waktu yang berbeda."], answerIndex: 2, explanation: "Ini adalah teknik klasik manipulasi TKP. Pelaku merusak jam tangan setelah korban tewas dan memutar jarum jamnya agar polisi mengira pembunuhan terjadi pada pukul 20:15, waktu di mana pelaku mungkin sudah memiliki alibi yang aman." },
+            { text: "Jika diketahui bahwa listrik di rumah tersebut padam total akibat petir dari pukul 19:00 hingga 20:00, alibi siapa yang paling terancam menjadi tidak logis?", options: ["Pak Maman (Tukang Kebun)", "Rina (Pelayan)", "Budi (Sopir)", "Ibu Siska (Istri)", "Tidak ada alibi yang terpengaruh oleh listrik padam", "Semua alibi justru menjadi lebih kuat"], answerIndex: 3, explanation: "Ibu Siska mengklaim sedang \"membaca buku di balkon luar\". Jika listrik padam total pada pukul 19:00 - 20:00 (kondisi sudah malam dan gelap), sangat tidak mungkin seseorang bisa membaca buku di balkon luar tanpa pencahayaan, apalagi di tengah badai." },
+            { text: "Detektif menemukan selembar kertas di saku Pak Maman yang berisi jadwal pembagian warisan Tuan Arisanto. Apa nilai bukti ini dalam persidangan?", options: ["Bukti utama yang langsung menetapkan Pak Maman sebagai eksekutor.", "Bukti motif (alasan) mengapa Pak Maman mungkin ingin melenyapkan korban demi keuntungan finansial atau dendam.", "Bukti bahwa Pak Maman adalah anak kandung yang sah dari Tuan Arisanto.", "Dokumen sampah yang tidak memiliki nilai hukum sama sekali.", "Bukti bahwa korban berencana memecat Pak Maman.", "Kertas biasa yang tidak sengaja terbawa dari ruang kerja."], answerIndex: 1, explanation: "Kertas warisan di saku seorang tukang kebun memberikan petunjuk kuat tentang \"Motif\". Motif memperkuat aspek mengapa kejahatan itu dilakukan, meskipun harus didukung oleh bukti fisik untuk pembuktian mutlak." },
+            { text: "Rina (pelayan) memberikan kesaksian tambahan bahwa dia mendengar suara pertengkaran keras dari ruang kerja sebelum listrik padam. Namun, dia tidak bisa mengenali suaranya. Mengapa kesaksian ini penting?", options: ["Menunjukkan bahwa Rina memiliki masalah pendengaran.", "Memastikan bahwa kematian Tuan Arisanto bukan karena kecelakaan atau bunuh diri, melainkan ada unsur kesengajaan dan keterlibatan orang lain.", "Membuktikan bahwa pelaku adalah orang luar yang tidak dikenal penghuni rumah.", "Kesaksian ini tidak penting karena Rina tidak tahu siapa yang bertengkar.", "Menandakan rumah tersebut berhantu.", "Membantu polisi menemukan alat perekam tersembunyi."], answerIndex: 1, explanation: "Suara pertengkaran sesaat sebelum perkiraan waktu kematian memastikan adanya konflik fisik aktif, yang memperkuat arah penyelidikan ke kasus pembunuhan berencana (homicide)." },
+            { text: "Di TKP ditemukan segelas teh yang masih sangat panas pada pukul 21:00. Padahal Rina mengklaim menyiapkannya pada pukul 20:30. Bagaimana detektif menafsirkan ini?", options: ["Teh tersebut dibuat dengan teknologi gelas pemanas otomatis.", "Rina jujur, suhu ruangan memang sangat panas sehingga teh awet muda.", "Rina berbohong tentang waktu penyajian untuk menyembunyikan jam berapa dia sebenarnya berada di ruang kerja atau dia menyajikannya jauh lebih baru dari klaimnya.", "Teh tersebut dicampur bahan kimia yang bisa mendidih sendiri.", "Korban memasak ulang teh tersebut di dalam ruang kerjanya.", "Suhu teh tidak berpengaruh apa-apa dalam penyelidikan forensik."], answerIndex: 2, explanation: "Secara fisika, teh hangat biasa dalam gelas tidak akan tetap \"sangat panas\" setelah 30 menit. Kebohongan timeline ini menunjukkan Rina menyembunyikan sesuatu terkait jam interaksinya dengan TKP." },
+            { text: "Pak Maman akhirnya panik dan mengaku bahwa dia melihat Ibu Siska masuk ke ruang kerja membawa pisau. Namun, detektif justru langsung memborgol Pak Maman. Apa alasannya?", options: ["Detektif membenci Pak Maman secara personal.", "Ibu Siska memberikan uang suap kepada detektif.", "Kesaksian Pak Maman dianggap sebagai upaya fitnah (red herring) untuk mengalihkan kesalahan setelah alibi utamanya sendiri runtuh total.", "Pisau bukan merupakan senjata yang menyebabkan kematian korban.", "Detektif menangkap Pak Maman hanya untuk mengamankannya dari amukan Ibu Siska.", "Pak Maman meminta sendiri untuk ditangkap polisi."], answerIndex: 2, explanation: "Ketika seorang tersangka yang alibinya sudah patah tiba-tiba menuduh orang lain tanpa bukti baru yang solid, detektif melihatnya sebagai taktik keputusasaan (deflection) untuk mengaburkan fakta kejahatannya sendiri." },
+            { text: "Apa langkah terakhir yang paling menentukan untuk membuktikan kesalahan Pak Maman secara ilmiah di laboratorium forensik?", options: ["Menanyakan kembali secara berulang-ulang sampai dia menangis.", "Melakukan tes luminol (deteksi darah) and analisis DNA pada pakaian serta sepatu bot berkebun miliknya yang disembunyikan.", "Melakukan tes kejujuran menggunakan alat lie detector kuno.", "Meminta Pak Maman memperagacak ulang cara menyiram tanaman saat badai.", "Menunggu sampai ada saksi mata baru yang datang melapor tahun depan.", "Mencocokkan sidik jari Pak Maman pada gagang cangkir teh milik Rina."], answerIndex: 1, explanation: "Bukti ilmiah (forensic science) seperti tes luminol untuk mencari sisa bercak darah yang disamarkan dan mencocokkan DNA korban pada aset milik pelaku adalah bukti mutlak (smoking gun) yang tidak bisa dibantah di persidangan." }
+        ];
+
+        const detectiveEvaluations = [
+            {
+                min: 0, max: 3,
+                title: "Detektif Magang (The Watson)",
+                quote: "Kamu fokus pada cerita, tetapi sering melewatkan detail fisik.",
+                level: "Dasar / Pemula",
+                advice: "Jangan hanya mendengarkan pernyataan saksi, tetapi perhatikan bukti fisiknya! Hukum alam (seperti cuaca dan kegelapan) tidak pernah bisa berbohong.",
+                traits: [
+                    "Mudah Percaya: Kamu mudah terbawa oleh alibi yang terdengar meyakinkan secara emosional.",
+                    "Kurang Teliti: Detail kecil seperti jam tangan rusak atau suhu teh sering kamu anggap sebagai kebetulan biasa.",
+                    "Magnet Pengalih Perhatian (Red Herring): Pelaku sangat mudah melempar umpan palsu dan kamu langsung mempercayainya tanpa memeriksa ulang."
+                ]
+            },
+            {
+                min: 4, max: 6,
+                title: "Detektif Lapangan (The Inspector)",
+                quote: "Logika kamu sudah berjalan, tetapi pelaku yang cerdik masih bisa mengecoh kamu.",
+                level: "Rata-rata / Konvensional",
+                advice: "Tajamkan lagi kemampuan analisis forensik kamu. Ingat, penjahat yang panik akan melakukan apa saja untuk kelihatan tidak bersalah.",
+                traits: [
+                    "Logis namun Kaku: Kamu menyadari alibi palsu, tapi bingung ketika pelaku mulai memanipulasi TKP.",
+                    "Prosedural: Sangat mengikuti aturan dan kadang melupakan gambaran besarnya saat ada bukti baru.",
+                    "Ragu-ragu: Ketika tersangka mulai panik dan saling tuduh, fokus penyelidikan kamu agak sedikit goyah."
+                ]
+            },
+            {
+                min: 7, max: 8,
+                title: "Detektif Profiler (The Mindhunter)",
+                quote: "Kamu bisa membaca motif manusia dan mencium bau kebohongan dari jauh.",
+                level: "Di Atas Rata-rata / Tajam",
+                advice: "Sedikit lagi menuju level elit. Pastikan kamu selalu mengunci argumen dengan bukti ilmiah agar pelaku tidak bisa mengelak di persidangan.",
+                traits: [
+                    "Memahami Psikologi Kriminal: Kamu tahu persis mengapa pelaku menuduh orang lain karena panik.",
+                    "Analitis: Kamu bisa menghubungkan kejadian seperti listrik padam dengan ketidaklogisan alibi.",
+                    "Skeptis: Kamu tidak percaya dengan istilah 'kebetulan' di dalam tempat kejadian perkara."
+                ]
+            },
+            {
+                min: 9, max: 10,
+                title: "Detektif Jenius (The Sherlock)",
+                quote: "Bagi kamu, tidak ada kejahatan yang sempurna. Kamu melihat apa yang orang lain lewatkan.",
+                level: "Mutlak / Jenius",
+                advice: "Tetap pertahankan objektivitas dinginmu. Dunia forensik membutuhkan insting tajam sepertimu.",
+                traits: [
+                    "Observasi Tingkat Tinggi: Detail super halus seperti suhu teh yang tidak wajar langsung tertangkap.",
+                    "Berpikir Deduktif Murni: Mengeliminasi semua hal tidak mungkin, sisanya pasti kebenarannya.",
+                    "Dingin dan Objektif: Tidak peduli seberapa meyakinkannya raut wajah, hanya tunduk pada data & logika murni."
+                ]
+            }
+        ];
+
+        const genericProfileFallback = {
+            potensiKomprehensif: "Kombinasi dimensi kepribadian Anda menunjukkan kemampuan adaptasi unik. Anda memiliki potensi besar dalam peran yang membutuhkan dinamika.",
+            bakat: ["Adaptabilitas", "Komunikasi Fleksibel", "Manajemen Tugas"],
+            indeksKekurangan: ["Kesulitan Menentukan Prioritas", "Inkonsistensi Energi", "Blind Spot Detail"]
+        };
+
+        const MBTI_Profiles = {
+            "INTJ": {
+                title: "The Architect / Mastermind",
+                potensiKomprehensif: "Kombinasi antara intuisi yang tajam (N) dan logika yang kuat (T) membuat Anda memiliki kemampuan analisis di atas rata-rata. Anda adalah perancang sistem masa depan.",
+                bakat: ["Berpikir Strategis", "Pemecahan Masalah Kompleks", "Kemandirian Tinggi"],
+                indeksKekurangan: ["Perfeksionisme Ekstrem", "Kurang Peka (Blind Spot emosi)", "Arogansi Intelektual"]
+            },
+            "ENTP": { title: "The Debater", ...genericProfileFallback },
+            "INTP": { title: "The Logician", ...genericProfileFallback },
+            "ENTJ": { title: "The Commander", ...genericProfileFallback },
+            "INFJ": { title: "The Advocate", ...genericProfileFallback },
+            "INFP": { title: "The Mediator", ...genericProfileFallback },
+            "ENFJ": { title: "The Protagonist", ...genericProfileFallback },
+            "ENFP": { title: "The Campaigner", ...genericProfileFallback },
+            "ISTJ": { title: "The Logistician", ...genericProfileFallback },
+            "ISFJ": { title: "The Defender", ...genericProfileFallback },
+            "ESTJ": { title: "The Executive", ...genericProfileFallback },
+            "ESFJ": { title: "The Consul", ...genericProfileFallback },
+            "ISTP": { title: "The Virtuoso", ...genericProfileFallback },
+            "ISFP": { title: "The Adventurer", ...genericProfileFallback },
+            "ESTP": { title: "The Entrepreneur", ...genericProfileFallback },
+            "ESFP": { title: "The Entertainer", ...genericProfileFallback }
+        };
+
+        // --- Theme Management ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            const icon = document.getElementById('theme-icon');
+            
+            if(isDark) {
+                icon.setAttribute('data-lucide', 'sun');
+                safeSetTheme('dark');
+            } else {
+                icon.setAttribute('data-lucide', 'moon');
+                safeSetTheme('light');
+            }
+            lucide.createIcons();
+            
+            // Re-render charts if they exist to match theme styling
+            if (state.charts.bellCurve) {
+                renderBellCurveChart(state.penalaranSelections.filter(a => a.isCorrect).length);
+            }
+            if (state.charts.capabilityRadar) {
+                const totalLogicCorrect = state.penalaranSelections.filter(ans => ans.isCorrect).length;
+                const totalDetCorrect = state.detectiveSelections.filter(ans => ans.isCorrect).length;
+                renderCapabilityRadar(totalLogicCorrect, totalDetCorrect);
+            }
+        }
+
+        // Init theme safely
+        const savedTheme = safeGetTheme();
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+            });
+        }
+
+        // --- Core State Tracking ---
+        const state = {
+            participantName: "Anonim", // State untuk menyimpan nama
+            mbtiIndex: 0,
+            penalaranIndex: 0,
+            detectiveIndex: 0,
+            mbtiScores: { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 },
+            mbtiSelections: [],
+            penalaranSelections: [],
+            detectiveSelections: [],
+            charts: { bellCurve: null, capabilityRadar: null },
+            isTransitioning: false,
+            results: {},
+            startTime: 0,
+            totalTimeFormatted: "" 
+        };
+
+        const TOTAL_MBTI = mbtiQuestions.length;
+        const TOTAL_COG = penalaranQuestions.length;
+        const TOTAL_DET = detectiveQuestions.length;
+
+        // --- DOM Elements ---
+        const views = {
+            landing: document.getElementById('view-landing'),
+            mbti: document.getElementById('view-mbti'),
+            penalaran: document.getElementById('view-penalaran'),
+            detective: document.getElementById('view-detective'),
+            result: document.getElementById('view-result')
+        };
+        const navActions = document.getElementById('nav-actions');
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            switchView('landing');
+        });
+
+        function switchView(viewName) {
+            Object.values(views).forEach(el => el.classList.remove('active'));
+            views[viewName].classList.add('active');
+            navActions.classList.toggle('hidden', viewName === 'landing');
+        }
+
+        function resetState() {
+            state.mbtiIndex = 0; 
+            state.penalaranIndex = 0; 
+            state.detectiveIndex = 0;
+            state.mbtiScores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            state.mbtiSelections = []; 
+            state.penalaranSelections = []; 
+            state.detectiveSelections = [];
+            state.isTransitioning = false;
+            state.results = {};
+            state.startTime = 0;
+            state.totalTimeFormatted = "";
+        }
+
+        function startTest() {
+            // Validasi Input Nama
+            const nameInput = document.getElementById('participant-name').value.trim();
+            const errorMsg = document.getElementById('name-error');
+
+            if (!nameInput) {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('participant-name').focus();
+                return;
+            }
+            errorMsg.classList.add('hidden');
+
+            resetState();
+            state.participantName = nameInput; // Menyimpan nama ke State
+            state.startTime = Date.now();
+            switchView('mbti');
+            renderMBTIQuestion();
+            window.scrollTo(0,0);
+        }
+
+        function restartTest() {
+            window.scrollTo(0,0);
+            if(state.charts.bellCurve) {
+                state.charts.bellCurve.destroy();
+                state.charts.bellCurve = null;
+            }
+            if(state.charts.capabilityRadar) {
+                state.charts.capabilityRadar.destroy();
+                state.charts.capabilityRadar = null;
+            }
+            
+            // Hapus isi form nama ketika di-restart
+            document.getElementById('participant-name').value = ""; 
+            resetState();
+            switchView('landing');
+        }
+
+        // --- MBTI LOGIC ---
+        function renderMBTIQuestion() {
+            const q = mbtiQuestions[state.mbtiIndex];
+            const pct = Math.round((state.mbtiIndex / TOTAL_MBTI) * 100);
+            
+            document.getElementById('mbti-progress-text').innerText = `Pernyataan ${state.mbtiIndex + 1} / ${TOTAL_MBTI}`;
+            document.getElementById('mbti-progress-percentage').innerText = `${pct}%`;
+            document.getElementById('mbti-progress-bar-fill').style.width = `${pct}%`;
+            document.getElementById('mbti-question-text').innerText = `"${q.text}"`;
+        }
+
+        function handleMBTIAnswer(likertValue) {
+            if (state.isTransitioning) return;
+            state.isTransitioning = true;
+
+            const q = mbtiQuestions[state.mbtiIndex];
+            let contributedTo = "";
+
+            if (likertValue === 5) { state.mbtiScores[q.trait] += 2; contributedTo = q.trait; }
+            else if (likertValue === 4) { state.mbtiScores[q.trait] += 1; contributedTo = q.trait; }
+            else if (likertValue === 3) { contributedTo = "Netral"; }
+            else if (likertValue === 2) { state.mbtiScores[q.opp] += 1; contributedTo = q.opp; }
+            else if (likertValue === 1) { state.mbtiScores[q.opp] += 2; contributedTo = q.opp; }
+
+            state.mbtiSelections.push({ questionId: q.id, likertValue: likertValue, contributedTo: contributedTo });
+
+            if (state.mbtiIndex < TOTAL_MBTI - 1) {
+                state.mbtiIndex++;
+                renderMBTIQuestion();
+                state.isTransitioning = false; 
+            } else {
+                document.getElementById('mbti-progress-bar-fill').style.width = `100%`;
+                setTimeout(() => { 
+                    switchView('penalaran'); 
+                    renderPenalaranQuestion(); 
+                    window.scrollTo(0,0); 
+                    state.isTransitioning = false;
+                }, 300);
+            }
+        }
+
+        // --- PENALARAN LOGIC ---
+        function renderPenalaranQuestion() {
+            const q = penalaranQuestions[state.penalaranIndex];
+            const pct = Math.round((state.penalaranIndex / TOTAL_COG) * 100);
+            
+            document.getElementById('cog-progress-text').innerText = `Soal ${state.penalaranIndex + 1} / ${TOTAL_COG}`;
+            document.getElementById('cog-progress-percentage').innerText = `${pct}%`;
+            document.getElementById('cog-progress-bar-fill').style.width = `${pct}%`;
+            document.getElementById('cog-question-text').innerText = q.text;
+            
+            const abcd = ['A', 'B', 'C', 'D', 'E'];
+            document.getElementById('cog-options-container').innerHTML = q.options.map((opt, idx) => `
+                <button onclick="handlePenalaranAnswer(${idx})" class="group w-full text-left p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-slate-700 transition-all flex items-center gap-4 cursor-pointer">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-600 group-hover:bg-emerald-500 group-hover:text-white flex items-center justify-center font-bold text-slate-500 dark:text-slate-300 transition-colors">${abcd[idx]}</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-200">${opt}</span>
+                </button>
+            `).join('');
+        }
+
+        function handlePenalaranAnswer(selectedIndex) {
+            if (state.isTransitioning) return;
+            state.isTransitioning = true; 
+
+            const q = penalaranQuestions[state.penalaranIndex];
+            state.penalaranSelections.push({ qIndex: state.penalaranIndex, selectedIndex: selectedIndex, isCorrect: (selectedIndex === q.answerIndex) });
+
+            if (state.penalaranIndex < TOTAL_COG - 1) {
+                state.penalaranIndex++;
+                renderPenalaranQuestion();
+                state.isTransitioning = false; 
+            } else {
+                document.getElementById('cog-progress-bar-fill').style.width = `100%`;
+                setTimeout(() => { 
+                    switchView('detective'); 
+                    renderDetectiveQuestion(); 
+                    window.scrollTo(0,0); 
+                    state.isTransitioning = false; 
+                }, 300);
+            }
+        }
+
+        // --- DETECTIVE LOGIC ---
+        function renderDetectiveQuestion() {
+            const q = detectiveQuestions[state.detectiveIndex];
+            const pct = Math.round((state.detectiveIndex / TOTAL_DET) * 100);
+            
+            document.getElementById('det-progress-text').innerText = `Kasus ${state.detectiveIndex + 1} / ${TOTAL_DET}`;
+            document.getElementById('det-progress-percentage').innerText = `${pct}%`;
+            document.getElementById('det-progress-bar-fill').style.width = `${pct}%`;
+            document.getElementById('det-question-text').innerText = q.text;
+            
+            const abcdef = ['A', 'B', 'C', 'D', 'E', 'F'];
+            document.getElementById('det-options-container').innerHTML = q.options.map((opt, idx) => `
+                <button onclick="handleDetectiveAnswer(${idx})" class="group w-full text-left p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 hover:bg-amber-50 dark:hover:bg-slate-700 transition-all flex items-center gap-4 cursor-pointer">
+                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-600 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center font-bold text-slate-500 dark:text-slate-300 transition-colors">${abcdef[idx]}</span>
+                    <span class="font-medium text-slate-700 dark:text-slate-200">${opt}</span>
+                </button>
+            `).join('');
+        }
+
+        function handleDetectiveAnswer(selectedIndex) {
+            if (state.isTransitioning) return;
+            state.isTransitioning = true; 
+
+            const q = detectiveQuestions[state.detectiveIndex];
+            state.detectiveSelections.push({ qIndex: state.detectiveIndex, selectedIndex: selectedIndex, isCorrect: (selectedIndex === q.answerIndex) });
+
+            if (state.detectiveIndex < TOTAL_DET - 1) {
+                state.detectiveIndex++;
+                renderDetectiveQuestion();
+                state.isTransitioning = false; 
+            } else {
+                document.getElementById('det-progress-bar-fill').style.width = `100%`;
+                setTimeout(() => { 
+                    calculateAndRenderFinalDashboard(); 
+                    state.isTransitioning = false; 
+                }, 300);
+            }
+        }
+
+        // --- CALCULATE & RENDER DASHBOARD ---
+        function calculateAndRenderFinalDashboard() {
+            // Kalkulasi Waktu Pengerjaan (Mulai & Selesai)
+            const endDate = new Date();
+            const startDate = new Date(state.startTime);
+            
+            const formatTime = (date) => {
+                const h = date.getHours().toString().padStart(2, '0');
+                const m = date.getMinutes().toString().padStart(2, '0');
+                return `${h}.${m}`;
+            };
+
+            state.totalTimeFormatted = `Mulai jam ${formatTime(startDate)} - Selesai jam ${formatTime(endDate)}`;
+
+            window.scrollTo(0,0);
+
+            // 1. Logic Scoring
+            const totalLogicCorrect = state.penalaranSelections.filter(ans => ans.isCorrect).length;
+            let catTitle = totalLogicCorrect >= 13 ? "Sangat Baik" : totalLogicCorrect >= 9 ? "Baik" : totalLogicCorrect >= 5 ? "Cukup" : "Perlu Peningkatan";
+            
+            document.getElementById('cog-final-score').innerText = totalLogicCorrect;
+            document.getElementById('cog-category-badge').innerText = catTitle;
+
+            renderBellCurveChart(totalLogicCorrect);
+
+            // 2. Detective Scoring
+            const totalDetCorrect = state.detectiveSelections.filter(ans => ans.isCorrect).length;
+            document.getElementById('det-final-score').innerText = totalDetCorrect;
+            
+            let evaluation = detectiveEvaluations.find(e => totalDetCorrect >= e.min && totalDetCorrect <= e.max);
+            if(!evaluation) evaluation = detectiveEvaluations; 
+
+            document.getElementById('det-eval-title').innerText = evaluation.title;
+            document.getElementById('det-eval-quote').innerText = `"${evaluation.quote}"`;
+            document.getElementById('det-eval-level').innerText = evaluation.level;
+            document.getElementById('det-eval-advice').innerText = evaluation.advice;
+            document.getElementById('det-eval-traits').innerHTML = evaluation.traits.map(t => `<li>${t}</li>`).join('');
+
+            // 3. MBTI Type Evaluation
+            const a = state.mbtiScores;
+            const finalType = `${a.E >= a.I ? 'E' : 'I'}${a.S >= a.N ? 'S' : 'N'}${a.T >= a.F ? 'T' : 'F'}${a.J >= a.P ? 'J' : 'P'}`;
+            
+            const profile = MBTI_Profiles[finalType] || MBTI_Profiles["INTJ"];
+            document.getElementById('res-mbti-type').innerText = finalType;
+            document.getElementById('res-profile-title').innerText = profile.title;
+            document.getElementById('res-potensi').innerText = profile.potensiKomprehensif;
+            document.getElementById('res-bakat').innerHTML = profile.bakat.map(b => `<span class="px-3 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 rounded-full text-xs font-bold shadow-sm">${b}</span>`).join('');
+            document.getElementById('res-kelemahan').innerHTML = profile.indeksKekurangan.map(k => `<li>${k}</li>`).join('');
+
+            // Save to state
+            state.results = {
+                finalType, totalLogicCorrect, totalDetCorrect
+            };
+
+            // 4. Render Dynamic Competence Matrix & Radar Chart
+            renderCapabilityRadar(totalLogicCorrect, totalDetCorrect);
+
+            // 5. Render Breakdowns
+            generateBreakdowns();
+            
+            lucide.createIcons();
+            switchView('result');
+        }
+
+        // --- DYNAMIC RADAR AND COMPETENCE MATRIX CALCULATOR ---
+        function renderCapabilityRadar(logicCorrect, detCorrect) {
+            // Calculations
+            const scoreKecerdasan = Math.round(20 + (logicCorrect / 15) * 80);
+            
+            const fRatio = state.mbtiScores.F / (state.mbtiScores.T + state.mbtiScores.F || 1);
+            const eRatio = state.mbtiScores.E / (state.mbtiScores.E + state.mbtiScores.I || 1);
+            const scoreEQ = Math.round(30 + (fRatio * 50) + (eRatio * 20));
+
+            const scoreSensing = state.mbtiScores.S / (state.mbtiScores.S + state.mbtiScores.N || 1);
+            const scoreDetective = detCorrect / 10;
+            const scoreKetelitian = Math.round(25 + (scoreSensing * 35) + (scoreDetective * 40));
+
+            const jRatio = state.mbtiScores.J / (state.mbtiScores.J + state.mbtiScores.P || 1);
+            const scoreCaraKerja = Math.round(30 + (jRatio * 70));
+
+            const scoreInsting = Math.round(15 + (detCorrect / 10) * 85);
+
+            document.getElementById('percent-kecerdasan').innerText = `${scoreKecerdasan}%`;
+            document.getElementById('bar-kecerdasan').style.width = `${scoreKecerdasan}%`;
+
+            document.getElementById('percent-emosional').innerText = `${scoreEQ}%`;
+            document.getElementById('bar-emosional').style.width = `${scoreEQ}%`;
+
+            document.getElementById('percent-ketelitian').innerText = `${scoreKetelitian}%`;
+            document.getElementById('bar-ketelitian').style.width = `${scoreKetelitian}%`;
+
+            document.getElementById('percent-carakerja').innerText = `${scoreCaraKerja}%`;
+            document.getElementById('bar-carakerja').style.width = `${scoreCaraKerja}%`;
+
+            document.getElementById('percent-insting').innerText = `${scoreInsting}%`;
+            document.getElementById('bar-insting').style.width = `${scoreInsting}%`;
+
+            if (state.charts.capabilityRadar) {
+                state.charts.capabilityRadar.destroy();
+            }
+            const ctx = document.getElementById('capabilityRadarChart').getContext('2d');
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+            const textColor = isDark ? '#cbd5e1' : '#475569';
+
+            state.charts.capabilityRadar = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Kecerdasan', 'EQ', 'Ketelitian', 'Cara Kerja', 'Insting'],
+                    datasets: [{
+                        label: 'Persentase Kapabilitas',
+                        data: [scoreKecerdasan, scoreEQ, scoreKetelitian, scoreCaraKerja, scoreInsting],
+                        backgroundColor: isDark ? 'rgba(129, 140, 248, 0.25)' : 'rgba(79, 70, 229, 0.2)',
+                        borderColor: isDark ? '#818cf8' : '#4f46e5',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#ef4444'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, 
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false, stepSize: 20 },
+                            grid: { color: gridColor },
+                            angleLines: { color: gridColor },
+                            pointLabels: { color: textColor, font: { size: 11, weight: 'bold', family: 'Inter' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- BELL CURVE CHART ---
+        function renderBellCurveChart(userScore) {
+            if(state.charts.bellCurve) {
+                state.charts.bellCurve.destroy();
+            }
+            const ctx = document.getElementById('bellCurveChart').getContext('2d');
+            
+            const labels = Array.from({length: 16}, (_, i) => i);
+            const mean = 7.5; const stdDev = 2.5;
+            const normalDist = labels.map(x => (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2)));
+            
+            const userDistValue = normalDist[userScore];
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            state.charts.bellCurve = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { type: 'scatter', label: 'Skor Anda', data: [{ x: userScore, y: userDistValue }], backgroundColor: '#ef4444', borderColor: '#fff', borderWidth: 2, pointRadius: 6, pointHoverRadius: 8, z: 10 },
+                        { label: 'Distribusi', data: normalDist, borderColor: '#818cf8', backgroundColor: 'rgba(129, 140, 248, 0.2)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                        y: { display: false }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- BREAKDOWNS ---
+        function generateBreakdowns() {
+            const logicHTML = state.penalaranSelections.map((ans, idx) => {
+                const q = penalaranQuestions[idx];
+                if(!q) return ''; 
+
+                const abcd = ['A', 'B', 'C', 'D', 'E'];
+                const icon = ans.isCorrect 
+                    ? `<div class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg shrink-0 mt-1"><i data-lucide="check" class="w-4 h-4"></i></div>` 
+                    : `<div class="bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 p-2 rounded-lg shrink-0 mt-1"><i data-lucide="x" class="w-4 h-4"></i></div>`;
+                const border = ans.isCorrect ? "border-emerald-100 dark:border-emerald-800 bg-emerald-50/20 dark:bg-emerald-900/10" : "border-rose-100 dark:border-rose-800 bg-rose-50/20 dark:bg-rose-900/10";
+                const userTextClass = ans.isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+
+                return `
+                    <div class="border ${border} p-4 sm:p-5 rounded-2xl flex gap-3 sm:gap-4 print:break-inside-avoid">
+                        ${icon}
+                        <div class="flex-grow">
+                            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Soal ${idx + 1}: ${q.text}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs mb-3">
+                                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-lg">Jawaban Anda: <b class="${userTextClass}">${abcd[ans.selectedIndex]}. ${q.options[ans.selectedIndex]}</b></div>
+                                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-lg">Kunci Jawaban: <b class="text-slate-800 dark:text-slate-300">${abcd[q.answerIndex]}. ${q.options[q.answerIndex]}</b></div>
+                            </div>
+                            <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 p-3 rounded-lg text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed font-medium">
+                                <b>Penjelasan:</b> ${q.explanation}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('logic-breakdown-container').innerHTML = logicHTML;
+
+            const detHTML = state.detectiveSelections.map((ans, idx) => {
+                const q = detectiveQuestions[idx];
+                if(!q) return '';
+
+                const abcdef = ['A', 'B', 'C', 'D', 'E', 'F'];
+                const icon = ans.isCorrect 
+                    ? `<div class="bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 p-2 rounded-lg shrink-0 mt-1"><i data-lucide="check" class="w-4 h-4"></i></div>` 
+                    : `<div class="bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 p-2 rounded-lg shrink-0 mt-1"><i data-lucide="x" class="w-4 h-4"></i></div>`;
+                const border = ans.isCorrect ? "border-amber-100 dark:border-amber-800 bg-amber-50/20 dark:bg-amber-900/10" : "border-rose-100 dark:border-rose-800 bg-rose-50/20 dark:bg-rose-900/10";
+                const userTextClass = ans.isCorrect ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400';
+
+                return `
+                    <div class="border ${border} p-4 sm:p-5 rounded-2xl flex gap-3 sm:gap-4 print:break-inside-avoid">
+                        ${icon}
+                        <div class="flex-grow">
+                            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm mb-2">Soal ${idx + 1}: ${q.text}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs mb-3">
+                                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-lg">Jawaban Anda: <b class="${userTextClass}">${abcdef[ans.selectedIndex]}. ${q.options[ans.selectedIndex]}</b></div>
+                                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-lg">Kunci Jawaban: <b class="text-slate-800 dark:text-slate-300">${abcdef[q.answerIndex]}. ${q.options[q.answerIndex]}</b></div>
+                            </div>
+                            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 p-3 rounded-lg text-xs text-amber-900 dark:text-amber-200 leading-relaxed font-medium">
+                                <b>Penjelasan:</b> ${q.explanation}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('det-breakdown-container').innerHTML = detHTML;
+        }
+
+        // --- GENERATOR PEMBAHASAN KLINIS KOMPREHENSIF HALAMAN 3 ---
+        function generateComprehensiveClinicalDiscussion(mbti, logicScore, detScore) {
+            let mbtiIntro = "";
+            let mbtiMethod = "";
+            if (mbti.includes("I")) {
+                mbtiIntro = "<b>Kecenderungan Introversi (I)</b> yang terdeteksi mengindikasikan bahwa subjek mengolah stimulus eksternal secara internal terlebih dahulu sebelum melakukan transmisi verbal.";
+                mbtiMethod = "Metodologi analisis berfokus pada kedalaman refleksi, konsentrasi terfokus, dan kecenderungan menghindari distorsi sosial.";
+            } else {
+                mbtiIntro = "<b>Kecenderungan Ekstroversi (E)</b> yang kuat menunjukkan bahwa subjek sangat responsif terhadap stimulus lingkungan langsung dan mengandalkan proses verbal interaktif untuk validasi ide.";
+                mbtiMethod = "Subjek memiliki dinamika kerja yang kolaboratif, kemampuan memobilisasi informasi secara cepat, serta adaptasi sosiometris yang baik.";
+            }
+
+            let mbtiCognitive = "";
+            if (mbti.includes("N") && mbti.includes("T")) {
+                mbtiCognitive = "Sebagai tipe berkarakter <b>Intuitive-Thinking (NT)</b>, subjek menunjukkan preferensi alami yang sangat kuat terhadap analisis makro, konseptualisasi sistem abstrak, dan objektivitas logis yang dingin. Subjek cenderung merumuskan pola teoritis terlebih dahulu kemudian memvalidasinya dengan data empiris.";
+            } else if (mbti.includes("S") && mbti.includes("T")) {
+                mbtiCognitive = "Sebagai tipe berkarakter <b>Sensing-Thinking (ST)</b>, subjek menunjukkan presisi pragmatis yang luar biasa. Subjek mengolah informasi berdasarkan fakta objektif konkrit, detail kronologis, serta aturan prosedural yang kaku namun sangat efisien dan terarah.";
+            } else {
+                mbtiCognitive = "Kombinasi parameter kepribadian subjek menunjukkan keseimbangan unik antara empati situasional dan rasionalisasi praktis, memungkinkan fleksibilitas keputusan yang dinamis sesuai kebutuhan tim.";
+            }
+
+            let logicDetail = "";
+            if (logicScore >= 13) {
+                logicDetail = `Dengan skor penalaran logika kognitif sebesar <b>${logicScore}/15 (Sangat Baik)</b>, subjek menempati persentil atas pada kurva distribusi normal kognitif populasi. Ini mencerminkan kemampuan fluid intelligence yang luar biasa, memproses kalkulasi spasial, numerik, dan penalaran silogisme deduktif secara instan tanpa hambatan distorsi struktural. Working memory subjek bekerja pada kapasitas optimal.`;
+            } else if (logicScore >= 9) {
+                logicDetail = `Skor penalaran kognitif sebesar <b>${logicScore}/15 (Baik)</b> menunjukkan kemampuan logika formal dan pemecahan masalah berpola di atas rata-rata populasi umum. Subjek mampu menarik benang merah dari silogisme kategorial dan memahami modus tollens/ponens dengan baik, namun mungkin memerlukan jeda pengolahan mikro saat dihadapkan pada paradoks logika tingkat tinggi.`;
+            } else {
+                logicDetail = `Skor penalaran kognitif sebesar <b>${logicScore}/15 (Perlu Peningkatan)</b> mengindikasikan perlunya stimulasi neuro-kognitif terfokus pada ranah spasial dan konseptual numerik. Subjek terkadang mengalami desinkronisasi logika akibat kurangnya fokus kronologis atau terjebak dalam bias asumsi personal saat menarik kesimpulan.`;
+            }
+
+            let detDetail = "";
+            if (detScore >= 9) {
+                detDetail = `Pada ranah investigatif deduktif, subjek meraih pencapaian ekseptional dengan skor <b>${detScore}/10 (Insting Sherlock)</b>. Subjek membuktikan tingkat jeli observasi yang luar biasa, mendeteksi ketidakwajaran fisik yang tidak kasat mata (seperti anomali suhu termal teh dan inkonsistensi alibi spasial akibat cuaca buruk). Subjek secara alami kebal terhadap upaya manipulasi fakta (red herrings/staging) yang dirancang pelaku.`;
+            } else if (detScore >= 6) {
+                detDetail = `Evaluasi deduktif kasus menunjukkan skor <b>${detScore}/10 (Insting Mindhunter)</b>. Subjek memiliki kapasitas analitis psikologis kriminal yang baik. Mampu mengidentifikasi kebohongan alibi dasar dan mengorelasikan sebab-akibat temporal, namun terkadang masih rentan terdistraksi oleh bukti sekunder yang diatur sedemikian rupa untuk mendiversifikasi fokus investigasi.`;
+            } else {
+                detDetail = `Skor deduksi investigatif sebesar <b>${detScore}/10 (Tingkat Watson)</b> menunjukkan subjek cenderung memproses informasi TKP secara literal tanpa skeptisisme analitis mendalam. Anomali temporal seperti manipulasi jam tangan atau anomali logis alibi cuaca sering luput karena subjek terlalu berfokus pada narasi permukaan tersangka.`;
+            }
+
+            let synergyTitle = "";
+            let careerRec = "";
+            if (mbti.includes("INT") || mbti.includes("ENT")) {
+                if (detScore >= 8 && logicScore >= 11) {
+                    synergyTitle = "THE SYSTEMATIC PROSECUTOR / CHIEF STRATEGIST";
+                    careerRec = "Sangat direkomendasikan untuk menempati posisi <b>Sistem Arsitek Logika, Penasihat Hukum Strategis, Direktur Kepatuhan Regulasi (Compliance), atau Analis Kriminal Forensik Tingkat Tinggi</b>.";
+                } else {
+                    synergyTitle = "THE INQUISITIVE ARCHITECT";
+                    careerRec = "Sangat cocok untuk penugasan pada ranah <b>Riset &amp; Pengembangan Teknologi, Manajemen Risiko Operasional, Analis Pasar Modal, atau Desainer Keamanan Sistem Informasi</b>.";
+                }
+            } else {
+                synergyTitle = "THE DEDICATED EVALUATOR";
+                careerRec = "Profil mengarah pada kesuksesan di bidang <b>Manajemen Prosedur Standar (SOP Specialist), Auditor Keuangan Forensik, Investigasi Klaim Asuransi, atau Koordinator Divisi Penjamin Mutu (Quality Assurance)</b>.";
+            }
+
+            return `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-weight: bold; font-size: 12px; color: #1e3a8a; margin: 0 0 8px 0; border-left: 3px solid #3b82f6; padding-left: 8px; text-transform: uppercase;">I. Evaluasi Karakteristik Psikometrik &amp; Struktur Kepribadian</h4>
+                    <p style="margin: 0 0 10px 0;">Berdasarkan pemetaan 32 sampel variabel Likert, subjek menunjukkan konfigurasi kepribadian dominan dengan tipe <b>${mbti}</b>. ${mbtiIntro} ${mbtiMethod} ${mbtiCognitive}</p>
+                    <p style="margin: 0;">Secara mendalam, profil ini memproyeksikan kecenderungan subjek dalam memitigasi konflik interpersonal dengan pendekatan yang berbasis data nyata. Ketahanan mental dalam menghadapi tekanan situasional berada pada tingkat yang stabil, ditunjang oleh pemisahan yang jelas antara persepsi subjektif personal dan tuntutan profesionalisme.</p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-weight: bold; font-size: 12px; color: #1e3a8a; margin: 0 0 8px 0; border-left: 3px solid #3b82f6; padding-left: 8px; text-transform: uppercase;">II. Analisis Neuro-Kognitif, Pola Penalaran, &amp; IQ Kuantitatif</h4>
+                    <p style="margin: 0 0 10px 0;">${logicDetail}</p>
+                    <p style="margin: 0;">Analisis spesifik terhadap kesalahan jawaban (jika ada) mengindikasikan adanya desinkronisasi atensi temporal atau kelelahan kognitif sesaat, bukan karena cacat logika fundamental. Dalam skenario operasional nyata, subjek memiliki kapabilitas tinggi untuk melakukan dekonstruksi masalah kompleks menjadi sub-elemen fungsional secara instan, mempermudah kalkulasi estimasi risiko.</p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-weight: bold; font-size: 12px; color: #1e3a8a; margin: 0 0 8px 0; border-left: 3px solid #3b82f6; padding-left: 8px; text-transform: uppercase;">III. Diagnosis Deduktif, Insting Investigasi, &amp; Dekonstruksi Manipulasi</h4>
+                    <p style="margin: 0 0 10px 0;">${detDetail}</p>
+                    <p style="margin: 0;">Sikap skeptis metodologis yang ditunjukkan subjek adalah modal krusial dalam mitigasi kecurangan (fraud detection). Subjek tidak sekadar membaca kronologi peristiwa, melainkan mengorelasikan hukum fisika lingkungan secara simultan dengan psikologi pelaku, menghasilkan akurasi deduksi yang sangat presisi dan minim bias konfirmasi.</p>
+                </div>
+
+                <div style="border: 1px solid #1e3a8a; background: #f8fafc; padding: 15px; rounded: 8px;">
+                    <h4 style="font-weight: bold; font-size: 12px; color: #1e3a8a; margin: 0 0 8px 0; text-transform: uppercase; text-align: center;">IV. Sinergi Profil &amp; Rekomendasi Karir Profesional</h4>
+                    <p style="margin: 0 0 10px 0; text-align: center; font-size: 13px; font-weight: bold; color: #4f46e5;">KLASIFIKASI: ${synergyTitle}</p>
+                    <p style="margin: 0 0 8px 0; font-style: italic; text-align: center;">"Kombinasi silang antara ketajaman kognitif IQ, insting deduksi forensik, dan kerangka kepribadian MBTI subjek melahirkan profil kompetensi sosiometrik yang kokoh."</p>
+                    <p style="margin: 0; font-size: 11px;"><b>Rekomendasi Spesifik:</b> ${careerRec}</p>
+                </div>
+            `;
+        }
+
+        // --- MEDICAL PDF EXPORT LOGIC (3 PAGES) ---
+        function exportToPDF() {
+            const btn = document.getElementById('btn-export-pdf');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Menyiapkan PDF...`;
+            btn.disabled = true;
+            lucide.createIcons();
+
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('id-ID', options);
+            
+            const dateElement = document.getElementById('med-date');
+            if (dateElement) dateElement.innerText = formattedDate;
+
+            const timeElement = document.getElementById('med-time');
+            if (timeElement) timeElement.innerText = state.totalTimeFormatted;
+
+            // Injeksi Nama Peserta yang Diketik di Awal
+            const medNameElement = document.getElementById('med-name');
+            if (medNameElement) {
+                medNameElement.innerText = (state.participantName || "PESERTA ASESMEN").toUpperCase();
+            }
+
+            const logicScoreElement = document.getElementById('cog-final-score');
+            const mbtiTypeElement = document.getElementById('res-mbti-type');
+            const mbtiTitleElement = document.getElementById('res-profile-title');
+            const detScoreElement = document.getElementById('det-final-score');
+            const detLevelElement = document.getElementById('det-eval-title');
+            
+            const logicScore = logicScoreElement ? logicScoreElement.innerText : "0";
+            const mbtiType = mbtiTypeElement ? mbtiTypeElement.innerText : "N/A";
+            const mbtiTitle = mbtiTitleElement ? mbtiTitleElement.innerText : "N/A";
+            const detScore = detScoreElement ? detScoreElement.innerText : "0";
+            const detLevel = detLevelElement ? detLevelElement.innerText : "N/A";
+            
+            const medCogScoreElement = document.getElementById('med-cog-score');
+            if (medCogScoreElement) medCogScoreElement.innerText = `${logicScore} / 15`;
+            
+            const medMbtiTypeElement = document.getElementById('med-mbti-type');
+            if (medMbtiTypeElement) medMbtiTypeElement.innerText = mbtiType;
+            
+            const medMbtiTitleElement = document.getElementById('med-mbti-title');
+            if (medMbtiTitleElement) medMbtiTitleElement.innerText = mbtiTitle;
+            
+            const medDetScoreElement = document.getElementById('med-det-score');
+            if (medDetScoreElement) medDetScoreElement.innerText = `${detScore} / 10`;
+            
+            const medDetLevelElement = document.getElementById('med-det-level');
+            if (medDetLevelElement) medDetLevelElement.innerText = detLevel;
+
+            const resBakat = document.getElementById('res-bakat');
+            if (resBakat) {
+                const bakatHTML = resBakat.innerHTML;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = bakatHTML;
+                const bakatText = tempDiv.innerText || tempDiv.textContent;
+                const medNotes = document.getElementById('med-notes');
+                if (medNotes) {
+                    medNotes.innerHTML = `Kombinasi dimensi kepribadian pasien menunjukkan kemampuan adaptasi dan logika tingkat tinggi. Bakat dominan terdeteksi pada area <i>${bakatText.trim() || 'Multidisiplin'}</i>.`;
+                }
+            }
+
+            const radarChartCanvas = document.getElementById('capabilityRadarChart');
+            const medRadarChartImg = document.getElementById('med-radar-chart');
+            if(radarChartCanvas && medRadarChartImg) {
+                medRadarChartImg.src = radarChartCanvas.toDataURL("image/png", 1.0);
+            }
+
+            const barsToCopy = [
+                { idSrc: 'percent-kecerdasan', idDestVal: 'med-cap-1', idDestBar: 'med-cap-1-bar' },
+                { idSrc: 'percent-emosional', idDestVal: 'med-cap-2', idDestBar: 'med-cap-2-bar' },
+                { idSrc: 'percent-ketelitian', idDestVal: 'med-cap-3', idDestBar: 'med-cap-3-bar' },
+                { idSrc: 'percent-carakerja', idDestVal: 'med-cap-4', idDestBar: 'med-cap-4-bar' },
+                { idSrc: 'percent-insting', idDestVal: 'med-cap-5', idDestBar: 'med-cap-5-bar' }
+            ];
+
+            barsToCopy.forEach(mapping => {
+                const srcEl = document.getElementById(mapping.idSrc);
+                const destValEl = document.getElementById(mapping.idDestVal);
+                const destBarEl = document.getElementById(mapping.idDestBar);
+
+                if (srcEl && destValEl && destBarEl) {
+                    destValEl.innerText = srcEl.innerText;
+                    destBarEl.style.width = srcEl.innerText;
+                }
+            });
+
+            const discussionContent = generateComprehensiveClinicalDiscussion(mbtiType, parseInt(logicScore), parseInt(detScore));
+            const medDiscussionContentElement = document.getElementById('med-discussion-content');
+            if (medDiscussionContentElement) medDiscussionContentElement.innerHTML = discussionContent;
+            
+            const regNo = `RTM-${mbtiType}-${Math.floor(100000 + Math.random() * 900000)}`;
+            const regElements = [document.getElementById('med-reg'), document.getElementById('med-page2-reg'), document.getElementById('med-page3-reg')];
+            regElements.forEach(el => {
+                if(el) {
+                    if(el.id === 'med-reg') el.innerText = regNo;
+                    else el.innerText = `No. Reg: ${regNo}`;
+                }
+            });
+
+            const element = document.getElementById('medical-pdf-template');
+            if (element) {
+                element.style.display = 'block';
+
+                setTimeout(() => {
+                    const opt = {
+                        margin:       [0.4, 0.4, 0.4, 0.4], 
+                        filename:     `Hasil_Asesmen_Klinis_${mbtiType}.pdf`,
+                        image:        { type: 'jpeg', quality: 1.0 },
+                        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        element.style.display = 'none'; 
+                        btn.innerHTML = originalBtnHtml; 
+                        btn.disabled = false;
+                        lucide.createIcons();
+                    }).catch(err => {
+                        console.error("PDF Generation Error", err);
+                        element.style.display = 'none'; 
+                        btn.innerHTML = originalBtnHtml; 
+                        btn.disabled = false;
+                        lucide.createIcons();
+                    });
+                }, 500); 
+            } else {
+                btn.innerHTML = originalBtnHtml;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
